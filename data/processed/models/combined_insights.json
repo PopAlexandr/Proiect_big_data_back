@@ -1,0 +1,187 @@
+{
+  "timestamp": "2026-01-12T21:03:47.200124",
+  "data_sources": [
+    "OpenSky API (real\u2011time)",
+    "Historical CSV (batch)"
+  ],
+  "region_pairs_analyzed": 16,
+  "total_flights_processed": 22,
+  "comparison_results": [
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Eastern Europe",
+      "target_region": "Eastern Europe",
+      "total_trips": 360,
+      "avg_speed_kmh": 612.6593,
+      "flight_count": 360,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Eastern Europe",
+      "target_region": "Northern Europe",
+      "total_trips": 391,
+      "avg_speed_kmh": 628.2170332480819,
+      "flight_count": 391,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Eastern Europe",
+      "target_region": "Southern Europe",
+      "total_trips": 344,
+      "avg_speed_kmh": 640.0951744186048,
+      "flight_count": 344,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Eastern Europe",
+      "target_region": "Western Europe",
+      "total_trips": 394,
+      "avg_speed_kmh": 624.6504365482233,
+      "flight_count": 394,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Northern Europe",
+      "target_region": "Eastern Europe",
+      "total_trips": 401,
+      "avg_speed_kmh": 626.3185735660848,
+      "flight_count": 401,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Northern Europe",
+      "target_region": "Northern Europe",
+      "total_trips": 369,
+      "avg_speed_kmh": 638.9082926829268,
+      "flight_count": 369,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Northern Europe",
+      "target_region": "Southern Europe",
+      "total_trips": 334,
+      "avg_speed_kmh": 621.5945389221557,
+      "flight_count": 334,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Northern Europe",
+      "target_region": "Western Europe",
+      "total_trips": 386,
+      "avg_speed_kmh": 612.252932642487,
+      "flight_count": 386,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Southern Europe",
+      "target_region": "Eastern Europe",
+      "total_trips": 375,
+      "avg_speed_kmh": 615.672096,
+      "flight_count": 375,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Southern Europe",
+      "target_region": "Northern Europe",
+      "total_trips": 385,
+      "avg_speed_kmh": 650.6232311688312,
+      "flight_count": 385,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Southern Europe",
+      "target_region": "Southern Europe",
+      "total_trips": 357,
+      "avg_speed_kmh": 644.4144201680672,
+      "flight_count": 357,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Southern Europe",
+      "target_region": "Western Europe",
+      "total_trips": 369,
+      "avg_speed_kmh": 627.7840975609756,
+      "flight_count": 369,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Western Europe",
+      "target_region": "Eastern Europe",
+      "total_trips": 428,
+      "avg_speed_kmh": 618.0657476635514,
+      "flight_count": 428,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Western Europe",
+      "target_region": "Northern Europe",
+      "total_trips": 391,
+      "avg_speed_kmh": 615.6063529411765,
+      "flight_count": 391,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Western Europe",
+      "target_region": "Southern Europe",
+      "total_trips": 377,
+      "avg_speed_kmh": 618.0143872679045,
+      "flight_count": 377,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    },
+    {
+      "time_window": "2026-01-12 19:00:00",
+      "source_region": "Western Europe",
+      "target_region": "Western Europe",
+      "total_trips": 391,
+      "avg_speed_kmh": 638.1959386189258,
+      "flight_count": 391,
+      "historical_avg_trips": null,
+      "historical_avg_distance": null,
+      "trip_deviation_pct": 0.0
+    }
+  ]
+}
