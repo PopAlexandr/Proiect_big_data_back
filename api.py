@@ -79,23 +79,24 @@ async def get_batch_regions(limit: int = 100):
         raise HTTPException(500, f"Error loading batch data: {str(e)}")
 
 
-@app.get("/api/batch/countries")
-async def get_batch_countries():
-    """Get batch processed country aggregations"""
-    try:
-        file_path = DATA_PATHS["PROCESSED_BATCH"] / "country_aggregations.parquet"
-        if not file_path.exists():
-            raise HTTPException(404, "Country data not found")
+#do not use
+# @app.get("/api/batch/countries")
+# async def get_batch_countries():
+#     """Get batch processed country aggregations"""
+#     try:
+#         file_path = DATA_PATHS["PROCESSED_BATCH"] / "country_aggregations.parquet"
+#         if not file_path.exists():
+#             raise HTTPException(404, "Country data not found")
 
-        df = pd.read_parquet(file_path)
-        df["year"] = df["year"].astype(str)
+#         df = pd.read_parquet(file_path)
+#         df["year"] = df["year"].astype(str)
 
-        return {
-            "data": df.to_dict(orient="records"),
-            "total": len(df)
-        }
-    except Exception as e:
-        raise HTTPException(500, f"Error loading country data: {str(e)}")
+#         return {
+#             "data": df.to_dict(orient="records"),
+#             "total": len(df)
+#         }
+#     except Exception as e:
+#         raise HTTPException(500, f"Error loading country data: {str(e)}")
 
 
 @app.get("/api/streaming/latest")

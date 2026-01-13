@@ -273,6 +273,11 @@ async def get_insights():
         for key, value in insights_data.items():
             if isinstance(value, (datetime, pd.Timestamp)):
                 clean_insights[key] = value.isoformat()
+            elif isinstance(value, (list, np.ndarray, pd.Series)):
+                clean_insights[key] = [
+                    (None if pd.isna(x) else float(x) if isinstance(x, (np.float64, np.float32)) else x) 
+                    for x in (value.tolist() if hasattr(value, 'tolist') else value)
+                ]
             elif pd.isna(value):
                 clean_insights[key] = None
             elif isinstance(value, dict):

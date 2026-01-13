@@ -12,9 +12,8 @@ from config import OPENSKY_CONFIG, DATA_PATHS, PROCESSING_CONFIG
 class AirTrafficDataPipeline:
     def __init__(self):
         self.base_url = OPENSKY_CONFIG["BASE_URL"]
-        self.auth = (OPENSKY_CONFIG["USERNAME"], OPENSKY_CONFIG["PASSWORD"]) if OPENSKY_CONFIG["USERNAME"] else None
         self.europe_bounds = OPENSKY_CONFIG["EUROPE_BOUNDS"]
-
+        self.bearer_token = OPENSKY_CONFIG.get("BEARER_TOKEN")
         # Create directories
         for path in DATA_PATHS.values():
             if isinstance(path, Path):
@@ -32,10 +31,14 @@ class AirTrafficDataPipeline:
                 "lomax": self.europe_bounds["lomax"]
             }
 
+            headers = {}
+            if self.bearer_token:
+                headers["Authorization"] = f"Bearer {self.bearer_token}"
+
             # Add a small random delay to avoid hitting rate limits
             time.sleep(random.uniform(0.1, 0.5))
 
-            response = requests.get(url, params=params, auth=self.auth, timeout=15)
+            response = requests.get(url, params=params,headers=headers, timeout=15)
             response.raise_for_status()
             data = response.json()
 
