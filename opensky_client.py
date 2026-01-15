@@ -135,12 +135,24 @@ class AirTrafficDataPipeline:
         """Process historical data with batch analytics (no Spark)."""
         print("Processing batch data...")
 
+        # Determine grouping columns (handle mismatched CSV format)
+        src_col = "source_region"
+        tgt_col = "target_region"
+
+        if "source_subregion" in historical_df.columns and "target_subregion" in historical_df.columns:
+            # Heuristic: if source_region is generic "Europe", use subregions
+            if not historical_df.empty and historical_df["source_region"].iloc[0] == "Europe":
+                src_col = "source_subregion"
+                tgt_col = "target_subregion"
+                print(f"⚠ Detected generic 'Europe' regions. Using subregions '{src_col}'/'{tgt_col}' for alignment.")
+
         # 1. Region‑level aggregations
-        region_agg = historical_df.groupby(["source_region", "target_region", "year"]).agg({
+        region_agg = historical_df.groupby([src_col, tgt_col, "year"]).agg({
             "estimated_trips": ["sum", "mean", "count"],
             "dist": ["mean", "std"]
         }).reset_index()
 
+        # Rename columns to standard schema (overwriting src_col/tgt_col names)
         region_agg.columns = ["source_region", "target_region", "year",
                               "total_trips", "avg_trips", "route_count",
                               "avg_distance", "std_distance"]
@@ -172,10 +184,10 @@ class AirTrafficDataPipeline:
         }
 
     # ========== STREAMING PROCESSING (FAST REFRESH) ==========
-    def run_streaming(self, duration_minutes=None):
+    def run_streaming(self, duration_minutes=None, stop_check_callback=None):
         """
         Real‑time data collection and processing.
-        If duration_minutes is None or 0, runs indefinitely until KeyboardInterrupt.
+        If duration_minutes is None or 0, runs indefinitely until KeyboardInterrupt or stop_check_callback returns True.
         """
         if duration_minutes is None:
             duration_minutes = PROCESSING_CONFIG["STREAMING_TEST_DURATION_MINUTES"]
@@ -194,6 +206,11 @@ class AirTrafficDataPipeline:
 
         try:
             while end_time is None or datetime.now() < end_time:
+                # Check for external stop signal
+                if stop_check_callback and stop_check_callback():
+                    print("\n🛑 Streaming stopped by external signal.")
+                    break
+
                 batch_counter += 1
                 print(f"\n📡 Streaming batch #{batch_counter}...")
 
@@ -224,8 +241,12 @@ class AirTrafficDataPipeline:
                 else:
                     print("   ⚠ No flights in European airspace right now.")
 
-                # Wait for next interval
-                time.sleep(PROCESSING_CONFIG["STREAMING_INTERVAL_SECONDS"])
+                # Wait for next interval with interrupt capability
+                sleep_seconds = int(PROCESSING_CONFIG["STREAMING_INTERVAL_SECONDS"])
+                for _ in range(sleep_seconds):
+                    if stop_check_callback and stop_check_callback():
+                        break
+                    time.sleep(1)
 
         except KeyboardInterrupt:
             print("\n🛑 Streaming stopped by user.")

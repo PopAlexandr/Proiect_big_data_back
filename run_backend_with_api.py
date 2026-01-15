@@ -22,86 +22,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# ==================== HELPER FUNCTIONS ====================
-def clean_dataframe_for_json(df, max_rows=100):
-    """
-    Clean DataFrame to make it JSON serializable:
-    1. Replace NaN/Inf with None or 0
-    2. Convert timestamps to strings
-    3. Limit number of rows
-    """
-    if df.empty:
-        return []
-
-    # Make a copy to avoid modifying original
-    df_clean = df.copy()
-
-    # Limit rows
-    if len(df_clean) > max_rows:
-        df_clean = df_clean.head(max_rows)
-
-    # Replace NaN and infinite values
-    df_clean = df_clean.replace([np.nan, np.inf, -np.inf], None)
-
-    # Convert datetime columns to string
-    for col in df_clean.columns:
-        # Check if column contains datetime objects
-        if df_clean[col].dtype == 'object':
-            try:
-                # Try to convert to string
-                df_clean[col] = df_clean[col].astype(str)
-            except:
-                pass
-        # Also check for datetime dtype
-        elif pd.api.types.is_datetime64_any_dtype(df_clean[col]):
-            df_clean[col] = df_clean[col].astype(str)
-
-    # Convert to list of dictionaries
-    result = df_clean.to_dict(orient='records')
-
-    # Final pass: replace any remaining NaN/None in the dict
-    for record in result:
-        for key, value in record.items():
-            if pd.isna(value) or value is None:
-                record[key] = None
-            elif isinstance(value, (np.integer, np.int64)):
-                record[key] = int(value)
-            elif isinstance(value, (np.float64, np.float32)):
-                # Check if it's a special float
-                if np.isnan(value) or np.isinf(value):
-                    record[key] = None
-                else:
-                    record[key] = float(value)
-
-    return result
-
-def safe_json_response(data, status_code=200):
-    """Create a JSON response that handles NaN and other non-serializable values"""
-    def default_serializer(obj):
-        """Custom JSON serializer for non-serializable objects"""
-        if pd.isna(obj):  # Handle pandas NaN
-            return None
-        elif isinstance(obj, (np.integer, np.int64)):
-            return int(obj)
-        elif isinstance(obj, (np.float64, np.float32)):
-            if np.isnan(obj) or np.isinf(obj):
-                return None
-            return float(obj)
-        elif isinstance(obj, (datetime, pd.Timestamp)):
-            return obj.isoformat()
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        elif isinstance(obj, pd.Series):
-            return obj.tolist()
-        else:
-            return str(obj)  # Convert anything else to string
-
-    return JSONResponse(
-        content=data,
-        status_code=status_code,
-        media_type="application/json"
-    )
-
 # ==================== GLOBAL STATE ====================
 pipeline = None
 streaming_active = False
@@ -252,6 +172,13 @@ async def get_batch_regions():
                         record[col] = int(val)
                     else:
                         record[col] = val
+                
+                # Map total_trips to flight_count for frontend compatibility
+                if "total_trips" in record and record["total_trips"] is not None:
+                    record["flight_count"] = record["total_trips"]
+                else:
+                    record["flight_count"] = 0
+                
                 records.append(record)
 
             return {
@@ -299,6 +226,31 @@ async def get_insights():
         return clean_insights
     else:
         return {"status": "insights_not_generated_yet"}
+
+@app.post("/api/streaming/start")
+async def start_streaming():
+    """Start the streaming worker"""
+    global streaming_active
+    if streaming_active:
+        return {"status": "already_running", "message": "Streaming is already active"}
+    
+    streaming_thread = threading.Thread(target=streaming_worker, daemon=True)
+    streaming_thread.start()
+    
+    return {
+        "status": "started",
+        "message": "Streaming worker started"
+    }
+
+@app.post("/api/streaming/stop")
+async def stop_streaming():
+    """Stop the streaming worker"""
+    global streaming_active
+    streaming_active = False
+    return {
+        "status": "stopping",
+        "message": "Streaming worker will stop shortly"
+    }
 
 # ==================== BACKEND FUNCTIONS ====================
 def load_and_process_batch():
@@ -431,12 +383,18 @@ def streaming_worker():
 
                 print(f"📡 Streaming batch #{batch_counter}: {len(realtime_data)} flights")
 
-            # Wait for next interval
-            time.sleep(10)  # 10-second intervals
+            # Wait for next interval with smart sleep
+            for _ in range(30):
+                if not streaming_active:
+                    print("🛑 Streaming worker stopping...")
+                    break
+                time.sleep(1)
 
         except Exception as e:
             print(f"⚠ Streaming error: {e}")
             time.sleep(30)
+            
+    print("👋 Streaming worker finished.")
 
 # ==================== MAIN EXECUTION ====================
 def main():
@@ -465,7 +423,7 @@ def main():
     def update_realtime_worker():
         while True:
             update_realtime_data()
-            time.sleep(30)  # Update every 30 seconds
+            time.sleep(90)  # Update every 30 seconds
 
     realtime_thread = threading.Thread(target=update_realtime_worker, daemon=True)
     realtime_thread.start()

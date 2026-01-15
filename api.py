@@ -183,7 +183,11 @@ async def start_streaming():
         streaming_active = True
 
         # Run streaming indefinitely (until stopped)
-        pipeline.run_streaming(duration_minutes=0)  # 0 = run indefinitely
+        # Pass a callback to check if streaming should stop (when streaming_active becomes False)
+        pipeline.run_streaming(
+            duration_minutes=0, 
+            stop_check_callback=lambda: not streaming_active
+        ) 
 
         streaming_active = False
 
