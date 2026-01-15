@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
-import json
+
 
 # Import our modules
 from opensky_client import AirTrafficDataPipeline
@@ -20,7 +20,7 @@ from config import DATA_PATHS
 # We'll create a simple API server inline to avoid file dependencies
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+
 
 # ==================== GLOBAL STATE ====================
 pipeline = None
@@ -309,7 +309,7 @@ def streaming_worker():
     """Background worker for continuous streaming"""
     global streaming_active, latest_streaming_data, pipeline, insights_data
 
-    print("🚀 Starting streaming worker (10-second intervals)...")
+    print("🚀 Starting streaming worker (30-second intervals)...")
     streaming_active = True
 
     batch_counter = 0
@@ -423,7 +423,7 @@ def main():
     def update_realtime_worker():
         while True:
             update_realtime_data()
-            time.sleep(90)  # Update every 30 seconds
+            time.sleep(90)  # Update every 90 seconds
 
     realtime_thread = threading.Thread(target=update_realtime_worker, daemon=True)
     realtime_thread.start()
